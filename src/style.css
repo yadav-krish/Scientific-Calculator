@@ -58,3 +58,19 @@ body {
 .zero {
   grid-column: span 2;
 }
+.scientific-buttons {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+.scientific-buttons button {
+  padding: 12px;
+  width: 60px;
+  border-radius: 10px;
+  background: #e1e1e1;
+  font-weight: bold;
+  cursor: pointer;
+}
