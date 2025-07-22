@@ -68,43 +68,73 @@ scientificButtons.forEach((button) => {
   });
 });
 // logic to calculate
+function extractLastExpression(expr) {
+  const match = expr.match(/([0-9.]+)$/); // Extracts last number or decimal
+  return match ? match[0] : "";
+}
+
 function handleScientificOperation(op) {
+  const lastExpr = extractLastExpression(currentInput);
+  const before = currentInput.slice(0, currentInput.length - lastExpr.length);
+
+  let wrappedExpr = "";
   switch (op) {
     case "sin":
-      currentInput += `${isDegree ? "Math.sin(toRadians(" : "Math.sin("}`;
+      wrappedExpr = isDegree
+        ? `Math.sin((${lastExpr}) * Math.PI / 180)`
+        : `Math.sin(${lastExpr})`;
       break;
     case "cos":
-      currentInput += `${isDegree ? "Math.cos(toRadians(" : "Math.cos("}`;
+      wrappedExpr = isDegree
+        ? `Math.cos((${lastExpr}) * Math.PI / 180)`
+        : `Math.cos(${lastExpr})`;
       break;
     case "tan":
-      currentInput += `${isDegree ? "Math.tan(toRadians(" : "Math.tan("}`;
+      wrappedExpr = isDegree
+        ? `Math.tan((${lastExpr}) * Math.PI / 180)`
+        : `Math.tan(${lastExpr})`;
       break;
     case "log":
-      currentInput += "Math.log10(";
+      wrappedExpr = `Math.log10(${lastExpr})`;
       break;
     case "ln":
-      currentInput += "Math.log(";
+      wrappedExpr = `Math.log(${lastExpr})`;
       break;
     case "√":
-      currentInput += "Math.sqrt(";
+      wrappedExpr = `Math.sqrt(${lastExpr})`;
+      break;
+    case "!":
+      wrappedExpr = `factorial(${lastExpr})`;
       break;
     case "^":
       currentInput += "**";
-      break;
+      updateDisplay();
+      return;
     case "π":
       currentInput += Math.PI;
-      break;
+      updateDisplay();
+      return;
     case "e":
       currentInput += Math.E;
-      break;
+      updateDisplay();
+      return;
     case "(":
     case ")":
       currentInput += op;
-      break;
-    case "!":
-      currentInput += "!";
-      break;
+      updateDisplay();
+      return;
+    default:
+      return;
   }
+
+  if (lastExpr === "") {
+    // If no number exists, insert function with empty parentheses and cursor can fill
+    currentInput += wrappedExpr.replace(lastExpr, ""); // e.g., Math.sin()
+  } else {
+    // Wrap existing number
+    currentInput = before + wrappedExpr;
+  }
+
   updateDisplay();
 }
 function toRadians(angle) {
