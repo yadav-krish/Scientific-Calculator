@@ -21,129 +21,91 @@ numberButtons.forEach((button) => {
 const operatorButtons = document.querySelectorAll(".btn.operator");
 const equalButton = document.querySelector(".btn.equal");
 
-let firstOperand = null;
-let operator = null;
-let waitingForSecondOperand = false;
-
-// Handle operator buttons (+, -, ×, ÷)
 operatorButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const value = button.textContent;
-
-    if (firstOperand === null) {
-      firstOperand = parseFloat(currentInput);
-      currentInput = "0";
-    } else if (waitingForSecondOperand === true) {
-      const result = operate(firstOperand, parseFloat(currentInput), operator);
-      currentInput = result.toString();
-      firstOperand = result;
-      updateDisplay();
-    }
-    operator = value;
-    waitingForSecondOperand = true;
+    if (value === "×") currentInput += "*";
+    else if (value === "÷") currentInput += "/";
+    else currentInput += value;
+    updateDisplay();
   });
 });
-
-// Handle = button
-equalButton.addEventListener("click", () => {
-  if (firstOperand !== null && operator !== null) {
-    const secondOperand = parseFloat(currentInput);
-    const result = operate(firstOperand, secondOperand, operator);
-    currentInput = result.toString();
-    firstOperand = null;
-    operator = null;
-    waitingForSecondOperand = false;
-    updateDisplay();
-  }
-});
-
-// Core logic to calculate
-function operate(a, b, op) {
-  switch (op) {
-    case "+":
-      return a + b;
-    case "-":
-      return a - b;
-    case "×":
-      return a * b;
-    case "÷":
-      return b !== 0 ? a / b : "Error";
-    default:
-      return b;
-  }
-}
-// Adding Event Listeners for Clear Buttons
-const clearButton = document.getElementById("clear");
+// Event Listeners for AC, C, %
 const allClearButton = document.getElementById("all-clear");
+const clearButton = document.getElementById("clear");
+const percentButton = document.getElementById("percent");
 
-// All Clear : Reset Everything
+clearButton.addEventListener("click", () => {
+  if (currentInput.length > 1) {
+    currentInput = currentInput.slice(0, -1);
+  } else {
+    currentInput = "0";
+  }
+  updateDisplay();
+});
 allClearButton.addEventListener("click", () => {
   currentInput = "0";
-  operator = null;
-  waitingForSecondOperand = false;
   updateDisplay();
 });
-// Clear : Remove last character
-clearButton.addEventListener("click", () => {
-  if (currentInput.length > 1) currentInput = currentInput.slice(0, -1);
-  else currentInput = "0";
-  updateDisplay();
-});
-const percentButton = document.getElementById("percent");
 percentButton.addEventListener("click", () => {
-  if (currentInput === "0") return;
-  else {
-    currentInput = (parseFloat(currentInput) / 100).toString();
+  try {
+    const result = parseFloat(currentInput) / 100;
+    currentInput = result.toString();
+    updateDisplay();
+  } catch (error) {
+    currentInput = "Error";
     updateDisplay();
   }
 });
-
-const functionButtons = document.querySelectorAll(".scientific-buttons button");
-functionButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    handleScientificOperation(btn.textContent);
+//Add event listerners for scientific functions
+const scientificButtons = document.querySelectorAll(
+  ".scientific-buttons .function"
+);
+scientificButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const op = button.textContent;
+    handleScientificOperation(op);
   });
 });
-
+// logic to calculate
 function handleScientificOperation(op) {
-  const display = document.querySelector(".display");
-  let value = parseFloat(display.textContent);
   switch (op) {
     case "sin":
-      display.textContent = Math.sin(toRadians(value)).toFixed(6);
+      currentInput += `${isDegree ? "Math.sin(toRadians(" : "Math.sin("}`;
       break;
     case "cos":
-      display.textContent = Math.cos(toRadians(value)).toFixed(6);
+      currentInput += `${isDegree ? "Math.cos(toRadians(" : "Math.cos("}`;
       break;
     case "tan":
-      display.textContent = Math.tan(toRadians(value)).toFixed(6);
+      currentInput += `${isDegree ? "Math.tan(toRadians(" : "Math.tan("}`;
       break;
     case "log":
-      display.textContent = Math.log10(value).toFixed(6);
+      currentInput += "Math.log10(";
       break;
     case "ln":
-      display.textContent = Math.log(value).toFixed(6);
+      currentInput += "Math.log(";
       break;
     case "√":
-      display.textContent = Math.sqrt(value).toFixed(6);
+      currentInput += "Math.sqrt(";
       break;
     case "^":
-      display.textContent += "**"; // we'll use eval later
+      currentInput += "**";
       break;
     case "π":
-      display.textContent += Math.PI.toFixed(6);
+      currentInput += Math.PI;
       break;
     case "e":
-      display.textContent += Math.E.toFixed(6);
+      currentInput += Math.E;
       break;
     case "(":
     case ")":
-      display.textContent += op;
+      currentInput += op;
       break;
     case "!":
-      display.textContent = factorial(value);
+      currentInput += "!";
       break;
   }
+  updateDisplay();
 }
 function toRadians(angle) {
   if (isDegree) return angle * (Math.PI / 180);
@@ -151,12 +113,46 @@ function toRadians(angle) {
 }
 function factorial(n) {
   if (n < 0 || !Number.isInteger(n)) return "Error";
-  let fact = 1;
-  for (let i = 2; i <= n; i++) {
+  let fact = 1n;
+  for (let i = 2n; i <= BigInt(n); i++) {
     fact *= i;
   }
-  return fact;
+  const factStr = fact.toString();
+  if (factStr.length > 12) return Number(factStr).toExponential(6);
 }
+equalButton.addEventListener("click", () => {
+  try {
+    let expr = currentInput;
+
+    // Replace 5! with factorial(5)
+    expr = expr.replace(/(\d+)!/g, "factorial($1)");
+
+    // Evaluate expression with needed functions in scope
+    const result = Function(
+      "Math",
+      "toRadians",
+      "factorial",
+      `
+      "use strict";
+      return (${expr});
+    `
+    )(Math, toRadians, factorial);
+
+    currentInput = result.toString();
+    updateDisplay();
+  } catch (error) {
+    currentInput = "Error";
+    updateDisplay();
+  }
+});
+// function formatResult(value) {
+//   if (isNaN(value) || !isFinite(value)) return "Error";
+//   let num = Number(value);
+//   if (Math.abs(num) >= 1e12 || (Math.abs(num) < 1e-6 && num != 0))
+//     return num.toExponential(6);
+//   return parseFloat(num.toFixed(6)).toString();
+// }
+
 let isDarkMode = false;
 let isDegree = true;
 
