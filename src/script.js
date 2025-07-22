@@ -105,6 +105,58 @@ functionButtons.forEach((btn) => {
   });
 });
 
+function handleScientificOperation(op) {
+  const display = document.querySelector(".display");
+  let value = parseFloat(display.textContent);
+  switch (op) {
+    case "sin":
+      display.textContent = Math.sin(toRadians(value)).toFixed(6);
+      break;
+    case "cos":
+      display.textContent = Math.cos(toRadians(value)).toFixed(6);
+      break;
+    case "tan":
+      display.textContent = Math.tan(toRadians(value)).toFixed(6);
+      break;
+    case "log":
+      display.textContent = Math.log10(value).toFixed(6);
+      break;
+    case "ln":
+      display.textContent = Math.log(value).toFixed(6);
+      break;
+    case "√":
+      display.textContent = Math.sqrt(value).toFixed(6);
+      break;
+    case "^":
+      display.textContent += "**"; // we'll use eval later
+      break;
+    case "π":
+      display.textContent += Math.PI.toFixed(6);
+      break;
+    case "e":
+      display.textContent += Math.E.toFixed(6);
+      break;
+    case "(":
+    case ")":
+      display.textContent += op;
+      break;
+    case "!":
+      display.textContent = factorial(value);
+      break;
+  }
+}
+function toRadians(angle) {
+  if (isDegree) return angle * (Math.PI / 180);
+  else return angle;
+}
+function factorial(n) {
+  if (n < 0 || !Number.isInteger(n)) return "Error";
+  let fact = 1;
+  for (let i = 2; i <= n; i++) {
+    fact *= i;
+  }
+  return fact;
+}
 let isDarkMode = false;
 let isDegree = true;
 
