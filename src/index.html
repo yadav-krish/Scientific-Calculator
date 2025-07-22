@@ -6,7 +6,25 @@
     <title>Calculator</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+  <body class="light">
+    <div class="toggles">
+      <!-- Theme Switch -->
+      <div class="toggle-switch">
+        <button id="toggle-mode" class="switch">
+          <span class="switch-label" id="theme-label">Light</span>
+          <span class="switch-handle"></span>
+        </button>
+      </div>
+
+      <!-- Angle Switch -->
+      <div class="toggle-switch">
+        <button id="toggle-angle" class="switch">
+          <span class="switch-label" id="angle-label">Degree</span>
+          <span class="switch-handle"></span>
+        </button>
+      </div>
+    </div>
+
     <div class="calculator">
       <!-- Display -->
       <div class="display" id="display">0</div>

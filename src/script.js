@@ -97,3 +97,70 @@ percentButton.addEventListener("click", () => {
     updateDisplay();
   }
 });
+
+const functionButtons = document.querySelectorAll(".function");
+functionButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const func = button.textContent;
+    switch (func) {
+      case "π":
+        currentInput += Math.PI.toFixed(8);
+        break;
+      case "e":
+        currentInput += Math.E.toFixed(8);
+        break;
+      case "√":
+        currentInput = Math.sqrt(parseFloat(currentInput)).toString();
+        break;
+      case "log":
+        currentInput = Math.log10(parseFloat(currentInput)).toString();
+        break;
+      case "ln":
+        currentInput = Math.log(parseFloat(currentInput)).toString();
+      case "sin":
+      case "sin":
+        currentInput = Math.sin(toRadians(currentInput)).toString();
+        break;
+      case "cos":
+        currentInput = Math.cos(toRadians(currentInput)).toString();
+        break;
+      case "tan":
+        currentInput = Math.tan(toRadians(currentInput)).toString();
+        break;
+      case "^":
+        currentInput += "**";
+        break;
+      case "(":
+      case ")":
+        currentInput += func;
+        break;
+    }
+  });
+});
+
+let isDarkMode = false;
+let isDegree = true;
+
+const body = document.body;
+
+const toggleModeBtn = document.getElementById("toggle-mode");
+const toggleAngleBtn = document.getElementById("toggle-angle");
+const themeLabel = document.getElementById("theme-label");
+const angleLabel = document.getElementById("angle-label");
+
+// Theme toggle
+toggleModeBtn.addEventListener("click", () => {
+  isDarkMode = !isDarkMode;
+  body.classList.toggle("dark");
+  body.classList.toggle("light");
+
+  toggleModeBtn.classList.toggle("active");
+  themeLabel.textContent = isDarkMode ? "Dark" : "Light";
+});
+
+// Angle toggle
+toggleAngleBtn.addEventListener("click", () => {
+  isDegree = !isDegree;
+  toggleAngleBtn.classList.toggle("active");
+  angleLabel.textContent = isDegree ? "Degree" : "Radian";
+});
