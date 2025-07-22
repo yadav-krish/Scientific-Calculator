@@ -98,43 +98,10 @@ percentButton.addEventListener("click", () => {
   }
 });
 
-const functionButtons = document.querySelectorAll(".function");
-functionButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const func = button.textContent;
-    switch (func) {
-      case "π":
-        currentInput += Math.PI.toFixed(8);
-        break;
-      case "e":
-        currentInput += Math.E.toFixed(8);
-        break;
-      case "√":
-        currentInput = Math.sqrt(parseFloat(currentInput)).toString();
-        break;
-      case "log":
-        currentInput = Math.log10(parseFloat(currentInput)).toString();
-        break;
-      case "ln":
-        currentInput = Math.log(parseFloat(currentInput)).toString();
-      case "sin":
-      case "sin":
-        currentInput = Math.sin(toRadians(currentInput)).toString();
-        break;
-      case "cos":
-        currentInput = Math.cos(toRadians(currentInput)).toString();
-        break;
-      case "tan":
-        currentInput = Math.tan(toRadians(currentInput)).toString();
-        break;
-      case "^":
-        currentInput += "**";
-        break;
-      case "(":
-      case ")":
-        currentInput += func;
-        break;
-    }
+const functionButtons = document.querySelectorAll(".scientific-buttons button");
+functionButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    handleScientificOperation(btn.textContent);
   });
 });
 
